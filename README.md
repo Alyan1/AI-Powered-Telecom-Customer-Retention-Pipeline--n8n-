@@ -37,11 +37,13 @@ The pipeline programmatically parses the AI's JSON output. If the `Churn_Risk_Sc
 ### 4. Automated Execution
 * **🔴 High-Risk Action (Telegram API):** Bypasses standard queues and instantly sends an enterprise alert to the Retention Team's Telegram channel with the customer's phone number, issue intent, and an AI-generated retention offer.
 
-*(Drag and drop your Telegram bot screenshot right here!)*
+![telegram](https://github.com/user-attachments/assets/1e15fdef-3f6b-4cdc-b25f-98794f8267fd)
+
 
 * **🟢 Routine Action (SMTP Email):** Connects to secure SMTP servers to automatically email the customer a polite, AI-contextualized digital receipt to assure them their issue is being reviewed by the standard support team.
 
-*(Drag and drop your Email screenshot right here!)*
+<img width="576" height="1280" alt="image" src="https://github.com/user-attachments/assets/6b52d16b-18d5-49a1-a730-b47a55d2061c" />
+
 
 ## 📊 The Impact
 * **Zero-Minute Triage:** Eliminated manual ticket reading and classification.
