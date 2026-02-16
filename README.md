@@ -17,7 +17,7 @@ I architected an autonomous, end-to-end triage pipeline for enterprise telecom p
 
 ## ⚙️ How It Works (The Architecture)
 
-*(Drag and drop your full n8n workflow canvas screenshot right here!)*
+Workflow Canvas.png
 
 The workflow executes in 4 distinct engineering phases:
 
