@@ -11,13 +11,13 @@ In the telecommunications sector, manual customer support triage leads to high c
 I architected an autonomous, end-to-end triage pipeline for enterprise telecom providers that reduces support classification time from days to seconds. 
 
 ## 🎯 Use Case Scenario
-**Meet "Usama" (The Flight Risk):** Usama's 4G connection drops constantly. He is furious and submits a support ticket threatening to switch to a rival telecom company. 
-* **Without this pipeline:** Usama waits 2 days for an email reply. He gets frustrated and switches networks.
-* **With this pipeline:** Within 3 seconds of clicking "Submit", the AI reads his angry intent, grades him a 10/10 flight risk, and instantly pings the Telecom Retention Team on Telegram. A human agent calls Usama 5 minutes later with a free 5GB data apology. Usama is retained.
+**Meet "Mahnoor" (The Flight Risk):** Mahnoor's 4G connection drops constantly. She is furious and submits a support ticket threatening to switch to a rival telecom company. 
+* **Without this pipeline:** Mahnoor waits 2 days for an email reply. She gets frustrated and switches networks.
+* **With this pipeline:** Within 3 seconds of clicking "Submit", the AI reads his angry intent, grades him a 10/10 flight risk, and instantly pings the Telecom Retention Team on Telegram. A human agent calls Mahnoor 5 minutes later with a free 5GB data apology. Mahnoor is retained.
 
 ## ⚙️ How It Works (The Architecture)
 
-Workflow Canvas.png
+anvas.png
 
 The workflow executes in 4 distinct engineering phases:
 
