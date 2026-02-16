@@ -17,8 +17,7 @@ I architected an autonomous, end-to-end triage pipeline for enterprise telecom p
 
 ## ⚙️ How It Works (The Architecture)
 
-anvas.png
-
+*(Workflow Canvas.png)*
 The workflow executes in 4 distinct engineering phases:
 
 ### 1. Data Ingestion (Google Workspace)
