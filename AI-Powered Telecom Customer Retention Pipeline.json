@@ -1,0 +1,252 @@
+{
+  "name": "Telecom Customer Support Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1GGYAquLf_6vs8dTIcDZeyqKNuGt2Qn9V4xxfRAU5pBk",
+          "mode": "list",
+          "cachedResultName": "Telecom Customer Support Portal (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GGYAquLf_6vs8dTIcDZeyqKNuGt2Qn9V4xxfRAU5pBk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 792728240,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GGYAquLf_6vs8dTIcDZeyqKNuGt2Qn9V4xxfRAU5pBk/edit#gid=792728240"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        -32
+      ],
+      "id": "73c6bcc3-dbfc-4b98-a5c1-3d67dd82023c",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "Nev2xhhtTVRi5Gj0",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-preview-09-2025",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-preview-09-2025"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an expert AI Triage Architect for Telecom customer support. Analyze the customer complaint provided below. You must output ONLY a valid JSON object with absolutely no markdown formatting, no backticks, and no conversational text.\n\nUse this exact JSON schema:\n{\n\"Intent\": \"Classify as Billing, Network, or General\",\n\"Sentiment\": \"Classify as Positive, Neutral, or Negative\",\n\"Churn_Risk_Score\": Assign an integer from 1 to 10 where 10 means the customer is furious and highly likely to leave Customer Support.\n}\n\nCustomer Complaint:\n\n{{ $json[\"Please describe your network or billing issue in details.\"] }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        -32
+      ],
+      "id": "4ce65033-2968-437c-8915-061c38ee3885",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dnF8YenuKo6lTXbS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "98f9bc17-ae7e-4106-8c7b-b82e0922f6b1",
+              "leftValue": "={{ JSON.parse($json.content.parts[0].text).Churn_Risk_Score }}",
+              "rightValue": 8,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        192,
+        -32
+      ],
+      "id": "8020d0e9-b498-4df1-9ae8-f720d3a18ca0",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "8395620842",
+        "text": "=🚨 HIGH CHURN RISK DETECTED 🚨\n\nCustomer Name: {{ $('Google Sheets Trigger').item.json[\"Please enter your name.\"] }}\nPhone Number: {{ $('Google Sheets Trigger').item.json[\"Please provide you phone number.\"] }}\nIssue Intent: {{ JSON.parse($('Message a model').item.json.content.parts[0].text).Intent }}\nChurn Score: {{ JSON.parse($('Message a model').item.json.content.parts[0].text).Churn_Risk_Score }}/10\n\nCustomer Complaint:\n\"{{ $('Google Sheets Trigger').item.json[\"Please describe your network or billing issue in detail.\"] }}\"\n\n💡 AI Suggested Retention Action:\nPlease contact immediately and offer a complimentary 5GB data bundle for the network inconvenience.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        -128
+      ],
+      "id": "08004921-b335-4ff3-b39c-6da43d171dc9",
+      "name": "Send a text message",
+      "webhookId": "0e9e5682-05d0-40b2-9e3c-d64fafc3fa79",
+      "credentials": {
+        "telegramApi": {
+          "id": "i67o2vrsvHXQIML3",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "syedalyan512@gmail.com",
+        "toEmail": "={{ $('Google Sheets Trigger').item.json['Please provide your email address.'] }}",
+        "subject": "Update on your Telco Support Ticket",
+        "emailFormat": "text",
+        "text": "=Dear {{ $('Google Sheets Trigger').item.json['Please provide your email address.'] }},\n\nThank you for reaching out to Telco Customer Support. \n\nWe have received your ticket regarding a \"{{ JSON.parse($('Message a model').item.json.content.parts[0].text).Intent }}\" issue. Our automated triage system has logged your complaint, and our standard support team will review it shortly. \n\nFor your records, here is the issue you submitted:\n\"{{ $('Google Sheets Trigger').item.json['Please describe your network or billing issue in details.'] }}\"\n\nThank you for being a valued Alyan Telco customer.\n\nBest regards,\nAlyan Telco Automated Triage Desk",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        64
+      ],
+      "id": "23761c8e-eabc-4305-93f9-e378326eb62c",
+      "name": "Send an Email",
+      "webhookId": "c1fc2b1c-e83b-497c-8c49-907baf7d73d9",
+      "credentials": {
+        "smtp": {
+          "id": "XVUv2uAO374Vk7lx",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "syedalyan512@gmail.com",
+        "toEmail": "={{ $('Google Sheets Trigger').item.json['Please provide your email address.'] }}",
+        "subject": "High priority complain ticket registered",
+        "emailFormat": "text",
+        "text": "We have escalated your urgent issue to a Senior Manager who will contact you with in 1 hour.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        608,
+        -128
+      ],
+      "id": "034dc218-5f0b-4d56-8904-babe3f70924c",
+      "name": "Send an Email1",
+      "webhookId": "ceed1cf8-42bf-4a15-b4f7-9842336281c8",
+      "credentials": {
+        "smtp": {
+          "id": "XVUv2uAO374Vk7lx",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Send an Email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "fa2c9b95-ecac-432d-9608-8de75e3327f4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9733b35501ac4fe1c69cc4e382e26735cff5b8da777211cf4df56938ad068e72"
+  },
+  "id": "ihkXLOAldMcBhsIR",
+  "tags": []
+}
